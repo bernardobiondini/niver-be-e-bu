@@ -72,7 +72,7 @@ Error generating stack: `+e.message+`
   border-radius: 12px;
 `,Fv=Lt.h1`
   position: absolute;
-  bottom: 5%;
+  bottom: 2.5%;
   left: 50%;
   transform: translateX(-50%);
   color: #ffd700;
