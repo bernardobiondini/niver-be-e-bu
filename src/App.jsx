@@ -368,7 +368,7 @@ const App = () => {
               ansiosos para celebrar juntos!
             </Description>
             <Description>
-              Envie o pix para o Be (ou chame um dos dois filhos da ... Lilian e
+              Envie o pix para o Be (ou chame um dos dois filhos da... Lilian e
               do JB no WhatsApp)
             </Description>
             <Description>
