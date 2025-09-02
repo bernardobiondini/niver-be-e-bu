@@ -6,7 +6,7 @@ import axios from "axios";
 const GlobalStyle = createGlobalStyle`
   body {
     margin: 0;
-    font-family: 'Comic Sans MS', cursive, sans-serif;
+    font-family: "Comic Neue", cursive;
     background: #000;
     color: #fff;
     display: flex;
@@ -163,6 +163,7 @@ const Form = styled.form`
 
 const App = () => {
   const [step, setStep] = useState(1);
+  const [loading, setLoading] = useState(false);
 
   const [ingressos, setIngressos] = useState({
     comida: 0,
@@ -199,9 +200,9 @@ const App = () => {
           "https://script.google.com/macros/s/AKfycbyW-xywoSltbG8YiHRMkqn65iKRgXYLDzrv_WnxVNw-_rRSSaJUpH2Ct6CNwNY8jtEH/exec",
           {
             method: "POST",
+            redirect: "follow",
             headers: {
-              "Content-Type": "application/json",
-              "Access-Control-Allow-Origin": "*"
+              "Content-Type": "text/plain;charset=utf-8",
             },
             body: JSON.stringify({
               nome: value,
@@ -210,15 +211,22 @@ const App = () => {
           }
         );
         const result = await response.json();
-        console.log("Sucesso:", result);
+        if (result.result !== "success") {
+          setStep(5);
+          setLoading(false);
+          return;
+        }
       } catch (err) {
-        console.error("Erro ao enviar:", err);
+        setStep(5);
+        setLoading(false);
+        return;
       }
 
       index++;
     }
 
     setStep(4);
+    setLoading(false);
   };
 
   const handleCopyPix = async () => {
@@ -249,7 +257,7 @@ const App = () => {
               esse dia ainda mais especial! <br />
             </Description>
             <Description style={{ color: "#888" }}>
-              27/09/2025 as 16h | Rua Antônio Paulino de Castro 623, Pampulha
+              27/09/2025 as 15h | Rua Antônio Paulino de Castro 623, Pampulha
             </Description>
             <Button onClick={() => setStep(2)}>Confirmar presença</Button>
           </>
@@ -319,29 +327,38 @@ const App = () => {
           </>
         )}
 
-        {step === 3 && (
-          <>
-            <Title>Informe os nomes</Title>
-            <Form id="form" onSubmit={(e) => submitForm(e)}>
-              {Array.from(
-                { length: ingressos.comida + ingressos.comidaBebida },
-                (_, i) => (
-                  <Input
-                    name={`convidado_${i}`}
-                    key={i}
-                    placeholder={`Nome do convidado ${i + 1}`}
-                  />
-                )
-              )}
-              <ButtonGroup>
-                <SecondaryButton type="button" onClick={() => setStep(2)}>
-                  Voltar
-                </SecondaryButton>
-                <Button type="submit">Confirmar Presença</Button>
-              </ButtonGroup>
-            </Form>
-          </>
-        )}
+        {step === 3 &&
+          (loading ? (
+            <Description>Enviando confirmações, aguarde...</Description>
+          ) : (
+            <>
+              <Title>Informe os nomes</Title>
+              <Form
+                id="form"
+                onSubmit={(e) => {
+                  setLoading(true);
+                  submitForm(e);
+                }}
+              >
+                {Array.from(
+                  { length: ingressos.comida + ingressos.comidaBebida },
+                  (_, i) => (
+                    <Input
+                      name={`convidado_${i}`}
+                      key={i}
+                      placeholder={`Nome do convidado ${i + 1}`}
+                    />
+                  )
+                )}
+                <ButtonGroup>
+                  <SecondaryButton type="button" onClick={() => setStep(2)}>
+                    Voltar
+                  </SecondaryButton>
+                  <Button type="submit">Confirmar Presença</Button>
+                </ButtonGroup>
+              </Form>
+            </>
+          ))}
 
         {step === 4 && (
           <>
@@ -369,9 +386,22 @@ const App = () => {
               </Button>
             </Description>
             <Description style={{ color: "#888" }}>
-              27/09/2025 as 16h <br />
+              27/09/2025 as 15h <br />
               Rua Antônio Paulino de Castro 623, Pampulha
             </Description>
+          </>
+        )}
+
+        {step === 5 && (
+          <>
+            <Title>Desculpa, teve um probleminha pra confirmar aqui!</Title>
+            <Description>
+              Manda mensagem pro Be ou pro Bu no Whatsapp que eles resolvem, ou
+              tente de novo.
+            </Description>
+            <Details>
+              Culpem o idiota do Bernardo por não saber programar direito 😅
+            </Details>
           </>
         )}
       </Wrapper>
